@@ -43,7 +43,7 @@ export const fetchAllDishes = createAsyncThunk<IDish[]>(
 
 export const fetchSelectedDish = createAsyncThunk<IDish, string>(
     'dishes/fetchSelectedDish',
-    async(id) => {
+    async (id) => {
         const response = await axiosAPI.get<IDishMutation>(`dishes/${id}.json`);
         const dishData = response.data;
         return {
@@ -55,7 +55,7 @@ export const fetchSelectedDish = createAsyncThunk<IDish, string>(
     }
 )
 
-export const deleteDishById = createAsyncThunk<void, string, {dispatch: AppDispatch}>(
+export const deleteDishById = createAsyncThunk<void, string, { dispatch: AppDispatch }>(
     'dishes/deleteDishById',
     async (id, thunkAPI) => {
         await axiosAPI.delete(`dishes/${id}.json`);
@@ -64,18 +64,18 @@ export const deleteDishById = createAsyncThunk<void, string, {dispatch: AppDispa
     }
 );
 
-export const addDish = createAsyncThunk<void, IDishMutation, {dispatch: AppDispatch}>(
+export const addDish = createAsyncThunk<void, IDishMutation, { dispatch: AppDispatch }>(
     'dishes/addDish',
-    async(dish, thunkAPI) => {
+    async (dish, thunkAPI) => {
         await axiosAPI.post('dishes.json', dish);
         toast.success('Dish added successfully');
         await thunkAPI.dispatch(fetchAllDishes());
     }
 )
 
-export const editDish = createAsyncThunk<void, IDish, {dispatch: AppDispatch}>(
+export const editDish = createAsyncThunk<void, IDish, { dispatch: AppDispatch }>(
     'dishes/editDish',
-    async(dish, thunkAPI) => {
+    async (dish, thunkAPI) => {
         const editedDish = {
             title: dish.title,
             price: dish.price,
@@ -91,22 +91,34 @@ export const editDish = createAsyncThunk<void, IDish, {dispatch: AppDispatch}>(
 export const dishesSlice = createSlice({
     name: 'dishes',
     initialState,
-    reducers: {},
+    reducers: {
+        clearSelectedDish: (state) => {
+            state.selectedDish = null;
+        },
+    },
     extraReducers: (builder) => {
         builder.addCase(fetchAllDishes.pending, (state) => {
             state.loading.loadingFetchDishes = true;
         });
         builder.addCase(fetchAllDishes.fulfilled, (state, {payload: dishes}) => {
-            state.loading.loadingFetchDishes  = false;
+            state.loading.loadingFetchDishes = false;
             state.dishes = dishes;
         });
         builder.addCase(fetchAllDishes.rejected, (state) => {
-            state.loading.loadingFetchDishes  = false;
+            state.loading.loadingFetchDishes = false;
         });
 
+        builder.addCase(fetchSelectedDish.pending, (state) => {
+            state.loading.loadingFetchDishes = true;
+        });
         builder.addCase(fetchSelectedDish.fulfilled, (state, {payload}) => {
+            state.loading.loadingFetchDishes = false;
             state.selectedDish = payload;
         });
+        builder.addCase(fetchSelectedDish.rejected, (state) => {
+            state.loading.loadingFetchDishes = false;
+        });
+
 
         builder.addCase(deleteDishById.pending, (state) => {
             state.loading.loadingDeleteDish = true;
@@ -145,3 +157,4 @@ export const selectDishesLoading = (state: RootState) => state.dishes.loading;
 export const selectDish = (state: RootState) => state.dishes.selectedDish;
 
 export const dishesReducer = dishesSlice.reducer;
+export const {clearSelectedDish} = dishesSlice.actions;

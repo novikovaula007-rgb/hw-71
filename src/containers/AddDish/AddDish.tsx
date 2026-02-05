@@ -1,8 +1,8 @@
+import DishForm from "../../components/DishForm/DishForm.tsx";
+
 const AddDish = () => {
     return (
-        <div>
-
-        </div>
+        <DishForm/>
     );
 };
 

@@ -30,17 +30,27 @@ const Dishes = () => {
                 </Button>
             </NavLink>
             {dishesLoading && <Spinner/>}
-            {!dishesLoading && dishes.length > 0 && dishes.map(dish => {
-                return <DishItem
-                    key={dish.id}
-                    title={dish.title}
-                    price={dish.price}
-                    image={dish.image}
-                    id={dish.id}
-                    isAdmin={isAdminPage}
-                />
-            })}
-            {!dishesLoading && dishes.length === 0 && 'There is no dishes yet.'}
+            <Box sx={{margin: '10px'}}>
+                <Box sx={
+                    {
+                        display: 'grid',
+                        gridTemplateColumns: 'auto auto auto',
+                        rowGap: '30px',
+                    }
+                }>
+                    {!dishesLoading && dishes.length > 0 && dishes.map(dish => {
+                        return <DishItem
+                            key={dish.id}
+                            title={dish.title}
+                            price={dish.price}
+                            image={dish.image}
+                            id={dish.id}
+                            isAdmin={isAdminPage}
+                        />
+                    })}
+                    {!dishesLoading && dishes.length === 0 && 'There is no dishes yet.'}
+                </Box>
+            </Box>
         </Box>
     )
 };
