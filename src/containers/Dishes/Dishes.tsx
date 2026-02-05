@@ -17,18 +17,20 @@ const Dishes = () => {
 
     useEffect(() => {
         dispatch(fetchAllDishes())
-    }, [dispatch])
+    }, [dispatch, location])
 
     return (
         <Box>
             <Typography variant='h4'>Dishes</Typography>
-            <NavLink to='/admin/dishes/add'>
+
+            {isAdminPage && (<NavLink to='/admin/dishes/add'>
                 <Button endIcon={<AddBoxIcon/>}
                         sx={{backgroundColor: '#171717', margin: '10px 0'}}
                         variant='contained'>
                     Add new dish
                 </Button>
-            </NavLink>
+            </NavLink>)}
+
             {dishesLoading && <Spinner/>}
             <Box sx={{margin: '10px'}}>
                 <Box sx={
