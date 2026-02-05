@@ -1,16 +1,16 @@
-interface IDish {
+export interface IDish {
     id: string,
     title: string,
     price: number,
     image: string
 }
 
-interface IDishMutation {
+export interface IDishMutation {
     title: string,
     price: number,
     image: string
 }
 
-interface IDishAPI {
+export interface IDishAPI {
     [key: string]: IDishMutation
 }
