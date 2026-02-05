@@ -15,6 +15,8 @@ interface Props {
     id: string,
 }
 
+const defaultCardImage = "https://i.ytimg.com/vi/w6geNk3QnBQ/sddefault.jpg";
+
 const DishItem: React.FC<Props> = ({title, price, image, isAdmin, id}) => {
     const dispatch = useAppDispatch();
 
@@ -32,9 +34,14 @@ const DishItem: React.FC<Props> = ({title, price, image, isAdmin, id}) => {
             }
         }>
             <CardMedia
-                sx={{height: 140, weight: 'auto'}}
-                image={image}
+                sx={{height: 140}}
                 title="dish"
+                component="img"
+                image={image || defaultCardImage}
+                onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = defaultCardImage;
+                }}
             />
             <CardContent sx={{flexGrow: 1}}>
                 <Typography gutterBottom variant="h5" component="div">
