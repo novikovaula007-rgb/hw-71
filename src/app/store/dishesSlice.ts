@@ -6,6 +6,7 @@ import type {AppDispatch, RootState} from "./store.ts";
 
 interface dishesState {
     dishes: IDish[],
+    selectedDish: IDish | null,
     loading: {
         loadingForm: boolean,
         loadingDeleteDish: boolean,
@@ -15,6 +16,7 @@ interface dishesState {
 
 const initialState: dishesState = {
     dishes: [],
+    selectedDish: null,
     loading: {
         loadingForm: false,
         loadingDeleteDish: false,
@@ -35,6 +37,20 @@ export const fetchAllDishes = createAsyncThunk<IDish[]>(
                 ...dishesObject[key],
                 id: key,
             }));
+        }
+    }
+)
+
+export const fetchSelectedDish = createAsyncThunk<IDish, string>(
+    'dishes/fetchSelectedDish',
+    async(id) => {
+        const response = await axiosAPI.get<IDishMutation>(`dishes/${id}.json`);
+        const dishData = response.data;
+        return {
+            id: id,
+            image: dishData.image,
+            title: dishData.title,
+            price: dishData.price
         }
     }
 )
@@ -66,7 +82,7 @@ export const editDish = createAsyncThunk<void, IDish, {dispatch: AppDispatch}>(
             image: dish.image
         };
 
-        await axiosAPI.put(`dishes/${dish.id}`, editedDish);
+        await axiosAPI.put(`dishes/${dish.id}.json`, editedDish);
         toast.success('Dish edited successfully');
         await thunkAPI.dispatch(fetchAllDishes())
     }
@@ -86,6 +102,10 @@ export const dishesSlice = createSlice({
         });
         builder.addCase(fetchAllDishes.rejected, (state) => {
             state.loading.loadingFetchDishes  = false;
+        });
+
+        builder.addCase(fetchSelectedDish.fulfilled, (state, {payload}) => {
+            state.selectedDish = payload;
         });
 
         builder.addCase(deleteDishById.pending, (state) => {
@@ -122,5 +142,6 @@ export const dishesSlice = createSlice({
 
 export const selectAllDishes = (state: RootState) => state.dishes.dishes;
 export const selectDishesLoading = (state: RootState) => state.dishes.loading;
+export const selectDish = (state: RootState) => state.dishes.selectedDish;
 
 export const dishesReducer = dishesSlice.reducer;
