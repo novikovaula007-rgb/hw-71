@@ -2,7 +2,7 @@ import type {IDish, IDishAPI, IDishMutation} from "../../types";
 import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
 import {axiosAPI} from "../../axiosAPI.ts";
 import {toast} from "react-toastify";
-import type {AppDispatch} from "./store.ts";
+import type {AppDispatch, RootState} from "./store.ts";
 
 interface dishesState {
     dishes: IDish[],
@@ -97,7 +97,30 @@ export const dishesSlice = createSlice({
         builder.addCase(deleteDishById.rejected, (state) => {
             state.loading.loadingDeleteDish = false;
         });
+
+        builder.addCase(editDish.pending, (state) => {
+            state.loading.loadingForm = true;
+        });
+        builder.addCase(editDish.fulfilled, (state) => {
+            state.loading.loadingForm = false;
+        });
+        builder.addCase(editDish.rejected, (state) => {
+            state.loading.loadingForm = false;
+        });
+
+        builder.addCase(addDish.pending, (state) => {
+            state.loading.loadingForm = true;
+        });
+        builder.addCase(addDish.fulfilled, (state) => {
+            state.loading.loadingForm = false;
+        });
+        builder.addCase(addDish.rejected, (state) => {
+            state.loading.loadingForm = false;
+        });
     }
 });
+
+export const selectAllDishes = (state: RootState) => state.dishes.dishes;
+export const selectDishesLoading = (state: RootState) => state.dishes.loading;
 
 export const dishesReducer = dishesSlice.reducer;
