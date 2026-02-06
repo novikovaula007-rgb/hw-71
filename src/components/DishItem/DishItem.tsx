@@ -1,11 +1,14 @@
 import {Box, Card, CardContent, CardMedia, IconButton, Typography} from "@mui/material";
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import {NavLink} from "react-router-dom";
-import {useAppDispatch} from "../../app/hooks.ts";
+import {useAppDispatch, useAppSelector} from "../../app/hooks.ts";
 import {deleteDishById} from "../../app/store/dishesSlice.ts";
 import React from "react";
+import {addDishToCart, deleteDishFromCart, selectCartDishes} from "../../app/store/cartSlice.ts";
 
 interface Props {
     isAdmin?: boolean,
@@ -19,6 +22,8 @@ const defaultCardImage = "https://i.ytimg.com/vi/w6geNk3QnBQ/sddefault.jpg";
 
 const DishItem: React.FC<Props> = ({title, price, image, isAdmin, id}) => {
     const dispatch = useAppDispatch();
+    const cartDishes = useAppSelector(selectCartDishes)
+    const dishInCart = cartDishes.find(item => item.dish.id === id);
 
     const deleteItemDish = () => {
         dispatch(deleteDishById(id))
@@ -63,14 +68,29 @@ const DishItem: React.FC<Props> = ({title, price, image, isAdmin, id}) => {
                             <EditIcon/>
                         </IconButton>
                     </>) : (<>
-                        <IconButton aria-label="addToCart">
-                            <ShoppingCartIcon/>
-                        </IconButton>
-                    </>)}
-                </Box>
+
+                        {dishInCart ? (<Box sx={{display: 'flex', alignItems: 'center'}}>
+                                <IconButton aria-label="removeToCart" onClick={() => dispatch(deleteDishFromCart(id))}>
+                                    <RemoveIcon/>
+                                </IconButton>
+                                <Typography sx={{display: 'inline', fontSize: '18px', fontWeight: 'bold'}}>
+                                    {dishInCart.count}
+                                </Typography>
+                                <IconButton aria-label="addToCart" onClick={() => dispatch(addDishToCart({id, image, title, price}))}>
+                                    <AddIcon/>
+                                </IconButton>
+                            </Box>
+                            ) : (
+                            <IconButton aria-label="addToCart" onClick={() => dispatch(addDishToCart({id, image, title, price}))}>
+                                <ShoppingCartIcon/>
+                            </IconButton>
+                            )}
+                </>)}
             </Box>
-        </Card>
-    );
+        </Box>
+</Card>
+)
+    ;
 };
 
 export default DishItem;

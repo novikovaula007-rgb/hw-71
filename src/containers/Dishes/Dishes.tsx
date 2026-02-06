@@ -21,37 +21,47 @@ const Dishes = () => {
 
     return (
         <Box>
-            <Typography variant='h4'>Dishes</Typography>
-
-            {isAdminPage && (<NavLink to='/admin/dishes/add'>
-                <Button endIcon={<AddBoxIcon/>}
-                        sx={{backgroundColor: '#171717', margin: '10px 0'}}
-                        variant='contained'>
-                    Add new dish
-                </Button>
-            </NavLink>)}
 
             {dishesLoading && <Spinner/>}
-            <Box sx={{margin: '10px'}}>
-                <Box sx={
-                    {
-                        display: 'grid',
-                        gridTemplateColumns: 'auto auto auto',
-                        rowGap: '30px',
-                    }
-                }>
-                    {!dishesLoading && dishes.length > 0 && dishes.map(dish => {
-                        return <DishItem
-                            key={dish.id}
-                            title={dish.title}
-                            price={dish.price}
-                            image={dish.image}
-                            id={dish.id}
-                            isAdmin={isAdminPage}
-                        />
-                    })}
-                    {!dishesLoading && dishes.length === 0 && 'There is no dishes yet.'}
+            <Box sx={{margin: '10px 0', ...(!isAdminPage && {display: 'grid', gridTemplateColumns: '60% 40%'})}}>
+                <Box>
+                    <Typography variant='h4' sx={{margin: '10px 0'}}>Dishes</Typography>
+
+                    {isAdminPage && (<NavLink to='/admin/dishes/add'>
+                        <Button endIcon={<AddBoxIcon/>}
+                                sx={{backgroundColor: '#171717', margin: '10px 0'}}
+                                variant='contained'>
+                            Add new dish
+                        </Button>
+                    </NavLink>)}
+
+                    <Box sx={
+                        {
+                            display: 'grid',
+                            gridTemplateColumns: 'auto auto auto',
+                            rowGap: '30px',
+                            ...(isAdminPage && {gridTemplateColumns: '30% 30% 30%'}),
+                            ...(!isAdminPage && {gridTemplateColumns: '50% 50%'})
+                        }
+                    }>
+                        {!dishesLoading && dishes.length > 0 && dishes.map(dish => {
+                            return <DishItem
+                                key={dish.id}
+                                title={dish.title}
+                                price={dish.price}
+                                image={dish.image}
+                                id={dish.id}
+                                isAdmin={isAdminPage}
+                            />
+                        })}
+                        {!dishesLoading && dishes.length === 0 && 'There is no dishes yet.'}
+                    </Box>
                 </Box>
+
+
+                {!isAdminPage && (<Box>
+                    <Typography variant='h4' sx={{margin: '10px 0'}}>Cart</Typography>
+                </Box>)}
             </Box>
         </Box>
     )
