@@ -14,3 +14,8 @@ export interface IDishMutation {
 export interface IDishAPI {
     [key: string]: IDishMutation
 }
+
+export interface CartDish {
+    dish: IDish;
+    count: number;
+}
