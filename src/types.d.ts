@@ -16,8 +16,18 @@ export interface IDishAPI {
 }
 
 export interface CartDish {
-    dish: IDish;
-    count: number;
+    dish: IDish,
+    count: number,
 }
 
 export type IOrder = Record<string, number>;
+
+export interface IOrderAPI {
+    [key: string]: IOrder
+}
+
+export interface IOrderData {
+    id: string;
+    items: IOrder;
+}
+

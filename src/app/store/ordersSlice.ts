@@ -1,25 +1,29 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
-import type {IOrder} from "../../types";
+import type {IOrder, IOrderAPI} from "../../types";
 import {axiosAPI} from "../../axiosAPI.ts";
+import type {AppDispatch, RootState} from "./store.ts";
+import {toast} from "react-toastify";
 
 interface ordersState {
-    orders: { id: string; items: IOrder }[];
+    orders: {id: string; items: IOrder}[];
     loading: {
         fetchOrders: boolean,
+        completeOrder: null | string
     }
 }
 
 const initialState: ordersState = {
     orders: [],
     loading: {
-        fetchOrders: false
+        fetchOrders: false,
+        completeOrder: null
     }
 }
 
 export const fetchOrders = createAsyncThunk<{ id: string; items: IOrder }[]>(
     'orders/fetchOrders',
     async () => {
-        const response = await axiosAPI.get('orders.json');
+        const response = await axiosAPI.get<IOrderAPI | null>('orders.json');
         const orderObject = response.data;
         if (orderObject) {
             return Object.keys(orderObject).map((key) => ({
@@ -28,6 +32,16 @@ export const fetchOrders = createAsyncThunk<{ id: string; items: IOrder }[]>(
             }));
         }
         return [];
+    }
+);
+
+export const deleteOrderById = createAsyncThunk<string, string, { dispatch: AppDispatch }>(
+    'orders/deleteOrderById',
+    async (id, thunkAPI) => {
+        await axiosAPI.delete(`orders/${id}.json`);
+        toast.success('Order completed successfully');
+        await thunkAPI.dispatch(fetchOrders());
+        return id;
     }
 );
 
@@ -46,8 +60,20 @@ const ordersSlice = createSlice({
             })
             .addCase(fetchOrders.rejected, (state) => {
                 state.loading.fetchOrders = false;
-            });
+            })
+            .addCase(deleteOrderById.pending, (state, action) => {
+                state.loading.completeOrder = action.meta.arg
+            })
+            .addCase(deleteOrderById.fulfilled, (state) => {
+                state.loading.completeOrder = null;
+            })
+            .addCase(deleteOrderById.rejected, (state) => {
+                state.loading.completeOrder = null;
+            })
+        ;
     },
 });
 
-export default ordersSlice.reducer;
+export const selectAllOrders = (state: RootState) => state.orders.orders;
+export const selectOrdersLoading = (state: RootState) => state.orders.loading;
+export const ordersReducer = ordersSlice.reducer;

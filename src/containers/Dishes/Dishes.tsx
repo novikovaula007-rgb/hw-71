@@ -53,7 +53,7 @@ const Dishes = () => {
                                 isAdmin={isAdminPage}
                             />
                         })}
-                        {!dishesLoading && dishes.length === 0 && 'There is no dishes yet.'}
+                        {!dishesLoading && dishes.length === 0 && <Typography>There is no dishes yet.</Typography>}
                     </Box>
                 </Box>
 

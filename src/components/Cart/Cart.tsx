@@ -5,16 +5,18 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
-    Divider,
+    Divider, IconButton,
     Stack,
     Typography
 } from "@mui/material";
 import CartDishes from "./CartDishes/CartDishes.tsx";
 import {useAppDispatch, useAppSelector} from "../../app/hooks.ts";
-import {clearCart, selectCartDishes} from "../../app/store/cartSlice.ts";
+import {clearCart, deleteAllItemOfDishFromCart, selectCartDishes} from "../../app/store/cartSlice.ts";
 import {DELIVERY_PRICE} from "../../globalConstants.ts";
+import ClearIcon from '@mui/icons-material/Clear';
 import {useState} from "react";
 import {axiosAPI} from "../../axiosAPI.ts";
+import {toast} from "react-toastify";
 
 const Cart = () => {
     const [open, setOpen] = useState(false);
@@ -35,6 +37,7 @@ const Cart = () => {
         try {
             setLoading(true)
             await axiosAPI.post('orders.json', orderData);
+            toast.success('The order has been successfully sent.')
         } catch (e) {
             console.log(e)
         } finally {
@@ -63,15 +66,18 @@ const Cart = () => {
                 </Box>
             ) : (<Typography>There is no dishes in cart yet.</Typography>)}
 
-            <Dialog open={open} onClose={() => !loading && setOpen(false)} fullWidth maxWidth="xs">
+            <Dialog open={open && cartDishes.length > 0} onClose={() => !loading && setOpen(false)} fullWidth maxWidth="xs">
                 <DialogTitle>Confirm Order</DialogTitle>
                 <DialogContent dividers>
                     <Typography sx={{backgroundColor: '#f5f5f5', borderRadius: 2, px: 0.5, mb: 2, textAlign: 'center', fontWeight: 'bold'}}>Dishes:</Typography>
                     <Stack spacing={1}>
                         {cartDishes.map((item) => (
-                            <Box key={item.dish.id} sx={{display: 'flex', justifyContent: 'space-between'}}>
+                            <Box key={item.dish.id} sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                                 <Typography>{item.dish.title} x {item.count}</Typography>
                                 <Typography fontWeight="bold">{item.dish.price * item.count} KGS</Typography>
+                                <IconButton aria-label="delete" onClick={() => dispatch(deleteAllItemOfDishFromCart(item.dish.id))}>
+                                    <ClearIcon/>
+                                </IconButton>
                             </Box>
                         ))}
                     </Stack>

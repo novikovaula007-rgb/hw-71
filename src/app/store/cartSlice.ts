@@ -1,6 +1,7 @@
 import type {CartDish, IDish} from "../../types";
 import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
 import type {RootState} from "./store.ts";
+import {fetchAllDishes} from "./dishesSlice.ts";
 
 interface CartState {
     cartDishes: CartDish[];
@@ -45,31 +46,37 @@ const cartSlice = createSlice({
                 state.cartDishes = state.cartDishes.filter(cartDish => cartDish.dish.id !== id);
             }
         },
-        updateDishesInCart: (state, action: PayloadAction<IDish[]>) => {
-            const dishes = action.payload;
-            const newCartDishes: CartDish[] = [];
 
-            state.cartDishes.forEach(cartDish => {
-                const existingDish = dishes.find(dish => cartDish.dish.id === dish.id);
-
-                if (!existingDish) {
-                    newCartDishes.push({...cartDish});
-                } else {
-                    newCartDishes.push({
-                        ...cartDish,
-                        dish: existingDish,
-                    });
-                }
-            });
-            state.cartDishes = newCartDishes;
+        deleteAllItemOfDishFromCart: (state, {payload: id}: PayloadAction<string>) => {
+            state.cartDishes = state.cartDishes.filter(
+                (item) => item.dish.id !== id
+            );
         },
+
         clearCart: (state) => {
             state.cartDishes = [];
         }
     },
+    extraReducers: builder => {
+        builder.addCase(fetchAllDishes.fulfilled, (state, action) => {
+            const newDishes = action.payload;
+
+            state.cartDishes = state.cartDishes.map(cartItem => {
+                const updatedDish = newDishes.find(dish => dish.id === cartItem.dish.id);
+
+                if (updatedDish) {
+                    return {
+                        ...cartItem,
+                        dish: updatedDish
+                    };
+                }
+                return cartItem;
+            });
+        });
+    }
 });
 
 export const selectCartDishes = (state: RootState) => state.cart.cartDishes;
 
 export const cartReducer = cartSlice.reducer;
-export const {addDishToCart, clearCart, deleteDishFromCart, updateDishesInCart} = cartSlice.actions;
+export const {addDishToCart, clearCart, deleteDishFromCart, deleteAllItemOfDishFromCart} = cartSlice.actions;
