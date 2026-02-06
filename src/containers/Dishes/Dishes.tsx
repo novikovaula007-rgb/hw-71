@@ -22,12 +22,10 @@ const Dishes = () => {
 
     return (
         <Box>
-
-            {dishesLoading && <Spinner/>}
             <Box sx={{margin: '10px 0', ...(!isAdminPage && {display: 'grid', gridTemplateColumns: '60% 40%'})}}>
                 <Box>
                     <Typography variant='h4' sx={{margin: '10px 0'}}>Dishes</Typography>
-
+                    {dishesLoading && <Spinner/>}
                     {isAdminPage && (<NavLink to='/admin/dishes/add'>
                         <Button endIcon={<AddBoxIcon/>}
                                 sx={{backgroundColor: '#171717', margin: '10px 0'}}

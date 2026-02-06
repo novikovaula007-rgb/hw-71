@@ -19,3 +19,5 @@ export interface CartDish {
     dish: IDish;
     count: number;
 }
+
+export type IOrder = Record<string, number>;
