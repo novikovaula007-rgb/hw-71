@@ -6,7 +6,7 @@ import {Box, Button, Typography} from "@mui/material";
 import Spinner from "../../components/UI/Spinner/Spinner.tsx";
 import DishItem from "../../components/DishItem/DishItem.tsx";
 import {NavLink, useLocation} from "react-router-dom";
-import CartItem from "../../components/Cart/CartItem/CartItem.tsx";
+import Cart from "../../components/Cart/Cart.tsx";
 
 const Dishes = () => {
     const location = useLocation();
@@ -61,7 +61,7 @@ const Dishes = () => {
 
                 {!isAdminPage && (<Box>
                     <Typography variant='h4' sx={{margin: '10px 0'}}>Cart</Typography>
-                    <CartItem count={1} dish={{title: 'fff', price: 100, image: '', id: '123'}}/>
+                    <Cart/>
                 </Box>)}
             </Box>
         </Box>
